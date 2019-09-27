@@ -1,3 +1,6 @@
+# Kobee Raveendran
+# tidbits
+
 courses = {
     4587: ('MAT 236', 4), 
     4599: ('COP 220', 3), 
@@ -20,3 +23,15 @@ course_numbers = input("Enter the {} course number(s): ".format(int(num_courses)
 print('std_id: ', std_id)
 print('num_courses: ', num_courses)
 print('course_numbers: ', course_numbers)
+
+state = True
+
+while state:
+    print('\nVALENCE COMMUNITY COLLEGE\nORLANDO FL 10101')
+    print('----------------------------')
+    
+    print('\nFee Invoice Prepared for Student V{}'.format(std_id))
+    
+    print('\n1 Credit Hour = $120.25')
+
+    
