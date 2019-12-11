@@ -15,9 +15,9 @@ const int MAX_COURSES = 4;
 
 struct student
 {
-   int coursesTaken = 0;
-   char name[];
-   int courseList[] = {0};
+   int coursesTaken;
+   char name[50];
+   int courseList[4];
    int id;
 };
 
@@ -45,10 +45,12 @@ int main()
     printf ("\nEnter your selection: ");
     scanf ("%d", &selection);
 
-    printf ();
+    printf ("\n");
 
     switch (selection)
         {
+           case 1:
+           
         case 1:
             {
             addCourses (studentCourses, courseOptions, selection,i);
@@ -74,6 +76,9 @@ int main()
 
     return 0;
 }
+
+int addStudent(int id, char name[])
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void printInvoice (int id, int *studentCourses)   //print course information and add total
 {
