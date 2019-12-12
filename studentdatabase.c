@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 const int MAX_COURSES = 4;
 
@@ -23,8 +24,9 @@ struct course
 struct student studentDatabase[10];
 int databaseSize = 0;
 
-void addStudent(int id, struct course courses[], int courseOptionSize);
-void editCourseList(int id);
+void addStudent(int id, struct course courses[]);
+void addDropCourse(int id, struct course courses[]);
+char* upper(char str[]);
 void search(int id);
 void printInvoice(int id);
 
@@ -100,41 +102,226 @@ int main()
                 }
 
                 // otherwise, add the student to the database
-                addStudent(id, courseOptions, 8);
+                addStudent(id, courseOptions);
+                break;             
+            }
+
+            case 2:
+            {
+                addDropCourse(id, courseOptions);
+                break;
             }
         }
+
+        printf("\nEnter your selection: ");
+        scanf("%d", &selection);
     }
 
     return 0;
 }
 
-void addStudent(int id, struct course courses[], int courseOptionSize)
+char* upper(char str[])
+{
+    int i;
+
+    for (i = 0; str[i] != '\0'; i++)
+    {
+        str[i] = toupper(str[i]);
+    }
+
+    return str;
+}
+
+void addStudent(int id, struct course courses[])
 {
     char firstname[20], lastname[20];
+    int courseOptionSize = 8;
     int numCourses;
 
     printf ("Enter the student's name: ");
     scanf ("%s %s", firstname, lastname);
 
-    printf ("\n\nEnter the number of courses [%s] is taking (up to 4 courses):\n", name);
-    scanf ("%d", &numCourses);
-
-    while (numCourses > 4 || numCourses < 1)
-    {
-        printf("Please enter a valid number of courses (min. 1, max. 4).\n");
-
-        printf ("\nEnter the number of courses [%s] is taking (up to 4 courses):\n", name);
-        scanf ("%d", &numCourses);
-    }
+    struct student currStudent;
+    currStudent.id = id;
+    strcpy(currStudent.firstname, firstname);
+    strcpy(currStudent.lastname, lastname);
 
     // display valid course options
+    printf ("\n\nCurrently offered courses: \n");
+    printf ("\tCRN\tCR_PREFIX\tCR_HOURS\n");
     int c;
     for (c = 0; c < courseOptionSize; c++)
     {
-        printf ("\t%d %s %d\n", courses[c].courseNum, courses[c].name, courses[c].creditHours);
+        printf ("\t%d\t%s\t\t%d\n", courses[c].courseNum, courses[c].name, courses[c].creditHours);
     }
 
+    printf ("\n\nEnter the number of courses [%s %s] is taking (up to 4 courses):\n", upper(firstname), upper(lastname));
+    scanf ("%d", &numCourses);
 
+    while (numCourses > 4 || numCourses < 0)
+    {
+        printf("Please enter a valid number of courses (min. 0, max. 4).\n");
 
-    printf("\n\nEnter the %d course numbers:", numCourses);
+        printf ("\nEnter the number of courses [%s %s] is taking (up to 4 courses):\n", upper(firstname), upper(lastname));
+        scanf ("%d", &numCourses);
+    }
+
+    if (numCourses)
+        printf("\n\nEnter the %d course numbers:\n", numCourses);
+
+    int i;
+    int coursesTaking[numCourses];
+
+    switch(numCourses)
+    {
+        case 1:
+            scanf ("%d", &coursesTaking[0]);
+            break;
+        
+        case 2:
+            scanf ("%d %d", &coursesTaking[0], &coursesTaking[1]);
+            break;
+        
+        case 3:
+            scanf ("%d %d %d", &coursesTaking[0], &coursesTaking[1], &coursesTaking[2]);
+            break;
+
+        case 4:
+            scanf ("%d %d %d %d", &coursesTaking[0], &coursesTaking[1], &coursesTaking[2], &coursesTaking[3]);
+            break;
+    }
+
+    int j;
+    int invalid = 0;
+
+    for (i = 0; i < numCourses; i++)
+    {
+        int found = 0;
+
+        for (j = 0; j < courseOptionSize; j++)
+        {
+            if (coursesTaking[i] == courses[j].courseNum)
+            {
+                found = 1;
+                break;
+            }
+        }
+
+        if (found)
+        {
+            continue;
+        }
+        else
+        {
+            printf("One or more course numbers invalid.\n");
+            invalid = 1;
+        }
+    }
+
+    while (invalid)
+    {
+
+        printf("\n\nEnter the %d  course numbers:\n",  numCourses);
+
+        switch(numCourses)
+        {
+            case 1:
+                scanf ("%d", &coursesTaking[0]);
+                break;
+            
+            case 2:
+                scanf ("%d %d", &coursesTaking[0], &coursesTaking[1]);
+                break;
+            
+            case 3:
+                scanf ("%d %d %d", &coursesTaking[0], &coursesTaking[1], &coursesTaking[2]);
+                break;
+
+            case 4:
+                scanf ("%d %d %d %d", &coursesTaking[0], &coursesTaking[1], &coursesTaking[2], &coursesTaking[3]);
+                break;
+        }
+
+        for (i = 0; i < numCourses; i++)
+        {
+            int found = 0;
+
+            for (j = 0; j < courseOptionSize; j++)
+            {
+                if (coursesTaking[i] == courses[j].courseNum)
+                {
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                invalid = 0;
+                continue;
+            }
+            else
+            {
+                printf("One or more course numbers invalid.\n");
+                invalid = 1;
+                break;
+            }
+        }
+    }
+
+    // create student and add student to database
+
+    currStudent.coursesTaken = numCourses;
+    
+    for (i = 0; i < numCourses; i++)
+    {
+        currStudent.courseList[i] = coursesTaking[i];
+    }
+
+    studentDatabase[databaseSize] = currStudent;
+    databaseSize++;
+
+    printf("Student added successfully!\n\n");
+}
+
+void addDropCourse(int id, struct course courses[])
+{
+    // find student
+    int studentIndex;
+
+    for (studentIndex = 0; studentIndex < databaseSize; studentIndex++)
+    {
+        if (id == studentDatabase[studentIndex].id)
+        {
+            break;
+        }
+    }
+
+    struct student currStudent = studentDatabase[studentIndex];
+
+    // print courses being taken
+    printf("Here are the courses [%s %s] is taking:\n", upper(currStudent.firstname), upper(currStudent.lastname));
+
+    printf("Choose from:\n");
+    printf("A- Add a new course for [%s %s]\n", upper(currStudent.firstname), upper(currStudent.lastname));
+    printf("D- Delete a course from [%s %s]'s schedule\n", upper(currStudent.firstname), upper(currStudent.lastname));
+    printf("C- Cancel operation\n");
+
+    char choice;
+
+    printf("\nChoose an action: ");
+    scanf(" %c", &choice);
+
+    char s = toupper(choice);
+
+    switch(s)
+    {
+        case 'A':
+            printf("Enter course number to add: \n");
+            break;
+
+        case 'D':
+            printf("Enter course number to delete: \n");
+            break;
+    }
 }
