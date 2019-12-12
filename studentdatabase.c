@@ -73,6 +73,11 @@ int main()
 
         switch (selection)
         {
+
+            case 0:
+                printf("\nGoodbye!\n");
+                break;
+
             case 1:
             {
                 // check to see if a student is already in the database before adding
@@ -114,6 +119,7 @@ int main()
             case 4:
             {
                 printInvoice(id, courseOptions);
+                break;
             }
         }
 
