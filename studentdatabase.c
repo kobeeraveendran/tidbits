@@ -27,8 +27,8 @@ int databaseSize = 0;
 void addStudent(int id, struct course courses[]);
 void addDropCourse(int id, struct course courses[]);
 char* upper(char str[]);
-void search(int id);
-void printInvoice(int id);
+void studentSearch(int id, struct course courses[]);
+void printInvoice(int id, struct course courses[]);
 
 int main()
 {
@@ -53,16 +53,9 @@ int main()
         courseOptions[i].name = courseNames[i];
         courseOptions[i].creditHours = courseCrdHrs[i];
     }
-    
-
-    
-    for (int i = 0; i < 8; i++)
-    {
-        printf("%d %s %d\n", courseOptions[i].courseNum, courseOptions[i].name, courseOptions[i].creditHours);
-
-    }
         
-    printf ("Welcome!\nChoose from the following options:\n");
+    printf ("Welcome!\n");
+    printf ("Choose from the following options:\n");
     printf ("\t1- Add a new student\n");
     printf ("\t2- Add/Delete a course\n");
     printf ("\t3- Search for a student\n");
@@ -111,7 +104,19 @@ int main()
                 addDropCourse(id, courseOptions);
                 break;
             }
+
+            case 3:
+            {
+                studentSearch(id, courseOptions);
+            }
         }
+
+        printf ("\n\nChoose from the following options:\n");
+        printf ("\t1- Add a new student\n");
+        printf ("\t2- Add/Delete a course\n");
+        printf ("\t3- Search for a student\n");
+        printf ("\t4- Print fee invoice\n");
+        printf ("\t0- Exit program\n");
 
         printf("\nEnter your selection: ");
         scanf("%d", &selection);
@@ -284,6 +289,34 @@ void addStudent(int id, struct course courses[])
     printf("Student added successfully!\n\n");
 }
 
+struct course findCourse(int crn, struct course courses[])
+{
+    int i;
+
+    for (i = 0; i < 8; i++)
+    {
+        if (crn == courses[i].courseNum)
+        {
+            return courses[i];
+        }
+    }
+}
+
+int checkEnrollment(int crn, int courses[], int numCourses)
+{
+    int i;
+
+    for (i = 0; i < numCourses; i++)
+    {
+        if (crn == courses[i])
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 void addDropCourse(int id, struct course courses[])
 {
     // find student
@@ -301,6 +334,16 @@ void addDropCourse(int id, struct course courses[])
 
     // print courses being taken
     printf("Here are the courses [%s %s] is taking:\n", upper(currStudent.firstname), upper(currStudent.lastname));
+    printf("\tCRN\tPREFIX\t\tCR. HOURS\n");
+
+    int i;
+    for (i = 0; i < currStudent.coursesTaken; i++)
+    {
+        int crn = currStudent.courseList[i];
+        struct course currCourse = findCourse(crn, courses);
+        
+        printf("\t%d\t%s\t\t%d\n", crn, currCourse.name, currCourse.creditHours);
+    }
 
     printf("Choose from:\n");
     printf("A- Add a new course for [%s %s]\n", upper(currStudent.firstname), upper(currStudent.lastname));
@@ -309,7 +352,7 @@ void addDropCourse(int id, struct course courses[])
 
     char choice;
 
-    printf("\nChoose an action: ");
+    printf("\nEnter your selection: ");
     scanf(" %c", &choice);
 
     char s = toupper(choice);
@@ -317,11 +360,113 @@ void addDropCourse(int id, struct course courses[])
     switch(s)
     {
         case 'A':
+            if (currStudent.coursesTaken == 4)
+            {
+                printf("Unable to add courses at this time: Student is currently enrolled in maximum number of courses. Rerouting to menu...\n\n");
+                break;
+            }
+
+            int newCourseId;
             printf("Enter course number to add: \n");
+            scanf("%d", &newCourseId);
+
+            if (!checkEnrollment(newCourseId, currStudent.courseList, currStudent.coursesTaken))
+            {
+                currStudent.courseList[currStudent.coursesTaken] = newCourseId;
+                currStudent.coursesTaken++;
+
+                printf("\nCourse successfully added!\n\n");
+            }
+            else
+            {
+                printf("\nYou are already enrolled in this course. Please try adding a different course.\n");
+            }
+
+            studentDatabase[studentIndex] = currStudent;
+
             break;
 
         case 'D':
+
+            if (currStudent.coursesTaken == 0)
+            {
+                printf("\nUnable to delete courses at this time: Student is currently not enrolled in any courses. Rerouting to menu...\n\n");
+                break;
+            }
+
+            int deleteCourseId;
             printf("Enter course number to delete: \n");
+            scanf("%d", &deleteCourseId);
+
+            if (checkEnrollment(deleteCourseId, currStudent.courseList, currStudent.coursesTaken))
+            {
+                int updatedCourseList[4];
+                int newCourseCount = 0;
+                int deleted = 0;
+
+                for (i = 0; i < 3; i++)
+                {
+                    if (currStudent.courseList[i] == deleteCourseId)
+                    {
+                        currStudent.courseList[i] = currStudent.courseList[i + 1];
+                        deleted = 1;
+                        currStudent.coursesTaken--;
+                    }
+                    else if (deleted)
+                    {
+                        currStudent.courseList[i] = currStudent.courseList[i + 1];
+                    }
+                }
+
+                if (!deleted)
+                {
+                    currStudent.coursesTaken--;
+                }
+
+                printf("\nCourse successfully deleted!\n\n");
+            }
+
+            else
+            {
+                printf("\nStudent is not enrolled in the course that is being deleted. Rerouting to main menu...\n\n");
+                break;
+            }
+
+            studentDatabase[studentIndex] = currStudent;
+            
             break;
     }
+}
+
+void studentSearch(int id, struct course courses[])
+{
+    int i;
+
+    for (i = 0; i < databaseSize; i++)
+    {
+        if (id == studentDatabase[i].id)
+        {
+            printf("FIRST NAME: %s\n", studentDatabase[i].firstname);
+            printf("LAST NAME: %s\n", studentDatabase[i].lastname);
+            printf("STUDENT ID: %d\n", studentDatabase[i].id);
+            printf("\nCURRENTLY ENROLLED COURSES:\n");
+            printf("\tCRN\tPREFIX\t\tCREDIT HOURS\n");
+            
+            int j;
+            for (j = 0; j < studentDatabase[i].coursesTaken; j++)
+            {
+                struct course currCourse = findCourse(studentDatabase[i].courseList[j], courses);
+                printf("\t%d\t%s\t\t%d\n", currCourse.courseNum, currCourse.name, currCourse.creditHours);
+            }
+
+            return;
+        }
+    }
+
+    printf("No student with ID %d found!\n\n", id);
+}
+
+void printInvoice(int id, struct course courses[])
+{
+    
 }
