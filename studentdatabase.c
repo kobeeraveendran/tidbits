@@ -108,6 +108,12 @@ int main()
             case 3:
             {
                 studentSearch(id, courseOptions);
+                break;
+            }
+
+            case 4:
+            {
+                printInvoice(id, courseOptions);
             }
         }
 
@@ -468,5 +474,44 @@ void studentSearch(int id, struct course courses[])
 
 void printInvoice(int id, struct course courses[])
 {
+    struct student currStudent;
+    int i;
+
+    for (i = 0; i < databaseSize; i++)
+    {
+        if (id == studentDatabase[i].id)
+        {
+            currStudent = studentDatabase[i];
+            break;
+        }
+    }
+
+    printf("\t\tVALENCE COMMUNITY COLLEGE\n");
+    printf("\t\tORLANDO FL 10101\n");
+    printf("\t\t---------------------\n\n");
+
+    printf("\t\tFee Invoice Prepared for Student:\n");
+    printf("\t\t%d-%s %s\n\n", currStudent.id, upper(currStudent.firstname), upper(currStudent.lastname));
+
+    printf("\t\t1 Credit Hour = $120.25\n\n");
+
+    printf("\t\tCRN\tCR_PREFIX\tCR_HOURS\n");
+
+    float total = 0.0;
     
+    for (i = 0; i < currStudent.coursesTaken; i++)
+    {
+        struct course currCourse = findCourse(currStudent.courseList[i], courses);
+
+        float price = currCourse.creditHours * 120.25;
+        total += price;
+
+        printf("\t\t%d\t%s\t\t       %d  $ %0.2f\n", currCourse.courseNum, currCourse.name, currCourse.creditHours, price);
+    }
+
+    printf("\n\t\t\tHealth & ID fees\t  $ 35.00\n");
+    printf("\n\t\t------------------------------------------\n");
+    printf("\t\t\tTotal Payments\t\t  $ %0.2f\n", total + 35.0);
+    printf("\n\n\n--------------------\n");
+
 }
