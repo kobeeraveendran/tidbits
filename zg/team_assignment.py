@@ -2,6 +2,7 @@
 # equally (or nearly equally) distribute them across the bins
 import random
 import argparse
+import operator
 
 def random_assignment(args):
     # or, if list isn't available, enter line by line
@@ -44,15 +45,21 @@ def weighted_assignment(args):
     print('(press Enter again when done entering info)')
 
     curr_player_info = input().split(' ')
+    
     player_list = [(curr_player_info[0], float(curr_player_info[1]))]
 
     while True:
         curr_player_info = input().split(' ')
 
-        if curr_player == '':
+        if curr_player_info[0] == '':
             break
 
         player_list.append((curr_player_info[0], float(curr_player_info[1])))
+
+    player_list.sort(key = operator.itemgetter(1))
+
+    # sorts by 2nd param (KDR or XLR rating)
+    print(player_list)
 
 if __name__ == '__main__':
 
@@ -61,7 +68,7 @@ if __name__ == '__main__':
                         help = 'The number of groups you want to sort the players into')
     parser.add_argument('--delimiter', default = ',', type = str, 
                         help = "The character you'd like to use to separate player names, default is ,")
-    parser.add_argument('--weighted', default = False, type = bool, 
+    parser.add_argument('--weighted', dest = 'weighted', default = False, action = 'store_true', 
                         help = 'Whether to assign teams randomly or balanced by skill/KD ratio.')
     
     args = parser.parse_args()
@@ -75,3 +82,4 @@ if __name__ == '__main__':
         random_assignment(args)
 
     else:
+        weighted_assignment(args)
