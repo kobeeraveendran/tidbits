@@ -102,8 +102,8 @@ def weighted_assignment(args):
     print('num_players: ', num_players)
     print('n: ', n)
 
-    #if num_players % n != 0:
-    #    groups[n - 1].append(groups[0].pop(-1))
+    if num_players % n != 0:
+        groups[n - 1].append(groups[0].pop(-1))
 
     for key, val in groups.items():
         print('\nTeam {}:\n'.format(key + 1))
@@ -112,7 +112,8 @@ def weighted_assignment(args):
         for player in val:
             print('   {}\t\t{}'.format(player[0], player[1]))
 
-        #print('Average skill (KDR/XLR): ', np.mean())
+        print('-------------------------------------')
+        print('\n   Average skill (KDR/XLR): {:0.2f}'.format(sum([x[1] for x in val]) / len(val)))
         print('\n')
 
 if __name__ == '__main__':
