@@ -102,8 +102,8 @@ def weighted_assignment(args):
     print('num_players: ', num_players)
     print('n: ', n)
 
-    if num_players % n != 0:
-        groups[n - 1].append(groups[0].pop(-1))
+    #if num_players % n != 0:
+    #    groups[n - 1].append(groups[0].pop(-1))
 
     for key, val in groups.items():
         print('\nTeam {}:\n'.format(key + 1))
