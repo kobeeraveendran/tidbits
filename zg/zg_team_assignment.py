@@ -3,22 +3,7 @@
 import random
 import argparse
 
-if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser(description = 'Bucket Team Randomizer')
-    parser.add_argument('--num_buckets', default = 2, type = int, 
-                        help = 'The number of groups you want to sort the players into')
-    parser.add_argument('--delimiter', default = ',', type = str, 
-                        help = "The character you'd like to use to separate player names, default is ,")
-    
-    
-    args = parser.parse_args()
-
-    # gather list of players
-    #player_list = 'Dreamtime, Phoenix, Saood, REY305, Reece, Radiador, meh???'.split(',')
-    #player_list = input("Enter list of players separated by a comma (,): ").split(',')
-    #player_list = [x.strip() for x in player_list]
-
+def random_assignment(args):
     # or, if list isn't available, enter line by line
     print('Enter players (one per line):')
     print('(press Enter again when done entering names)\n')
@@ -34,13 +19,7 @@ if __name__ == '__main__':
 
         player_list.append(curr_player)
 
-    
-    # sanity check
-    #print(player_list)
-
     random.shuffle(player_list)
-
-    #print('Shuffled list: \n', player_list)
 
     # sort players into n bins
     n = args.num_buckets
@@ -58,3 +37,41 @@ if __name__ == '__main__':
             print('   ', player)
 
         print('\n')
+
+def weighted_assignment(args):
+
+    print('Enter player names and KDR/XLRstats skill levels (separate names and KDR/stats with a space):')
+    print('(press Enter again when done entering info)')
+
+    curr_player_info = input().split(' ')
+    player_list = [(curr_player_info[0], float(curr_player_info[1]))]
+
+    while True:
+        curr_player_info = input().split(' ')
+
+        if curr_player == '':
+            break
+
+        player_list.append((curr_player_info[0], float(curr_player_info[1])))
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description = 'Bucket Team Randomizer')
+    parser.add_argument('--num_buckets', default = 2, type = int, 
+                        help = 'The number of groups you want to sort the players into')
+    parser.add_argument('--delimiter', default = ',', type = str, 
+                        help = "The character you'd like to use to separate player names, default is ,")
+    parser.add_argument('--weighted', default = False, type = bool, 
+                        help = 'Whether to assign teams randomly or balanced by skill/KD ratio.')
+    
+    args = parser.parse_args()
+
+    # gather list of players
+    #player_list = 'Dreamtime, Phoenix, Saood, REY305, Reece, Radiador, meh???'.split(',')
+    #player_list = input("Enter list of players separated by a comma (,): ").split(',')
+    #player_list = [x.strip() for x in player_list]
+
+    if not args.weighted:
+        random_assignment(args)
+
+    else:
