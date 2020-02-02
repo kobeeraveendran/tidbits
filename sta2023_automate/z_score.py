@@ -20,7 +20,7 @@ if not args.inverse:
     if not args.no_params:
         x = float(input('Enter value of x: '))
 
-        z_score = (x - mean) / std_dev
+        z_score = (x - mean) / stddev
         print('Z score: {} standard deviations'.format(z_score))
 
 else:
