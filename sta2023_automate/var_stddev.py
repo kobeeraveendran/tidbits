@@ -16,10 +16,14 @@ def variance(input_list):
 
     return pop_var, sample_var
 
-def std_dev(pop_var, sample_var):
+def std_dev(input_list):
+
+    pop_var, sample_var = variance(input_list)
 
     print('Population standard deviation: ', pop_var ** 0.5)
     print('Sample standard deviation: ', sample_var ** 0.5)
+
+    return pop_var ** 0.5, sample_var ** 0.5
 
 if __name__ == '__main__':
     #input_list = input('Enter data set as space-separated list:')
@@ -36,4 +40,4 @@ if __name__ == '__main__':
 
     find_range(input_list)
     pop_var, sample_var = variance(input_list)
-    std_dev(pop_var, sample_var)
+    std_dev(input_list)
