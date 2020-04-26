@@ -11,8 +11,8 @@ def variance(input_list):
     pop_var = num / len(input_list)
     sample_var = num / (len(input_list) - 1)
 
-    print('Population variance: ', pop_var)
-    print('Sample variance: ', sample_var)
+    #print('Population variance: ', pop_var)
+    #print('Sample variance: ', sample_var)
 
     return pop_var, sample_var
 
@@ -20,8 +20,8 @@ def std_dev(input_list):
 
     pop_var, sample_var = variance(input_list)
 
-    print('Population standard deviation: ', pop_var ** 0.5)
-    print('Sample standard deviation: ', sample_var ** 0.5)
+    #print('Population standard deviation: ', pop_var ** 0.5)
+    #print('Sample standard deviation: ', sample_var ** 0.5)
 
     return pop_var ** 0.5, sample_var ** 0.5
 
