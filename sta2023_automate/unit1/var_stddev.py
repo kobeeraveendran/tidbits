@@ -40,4 +40,9 @@ if __name__ == '__main__':
 
     find_range(input_list)
     pop_var, sample_var = variance(input_list)
-    std_dev(input_list)
+    mean = sum(input_list) / len(input_list)
+    print("Mean: ", mean)
+
+    pop_std, sample_std = std_dev(input_list)
+    print("Population std: ", pop_std)
+    print("Sample std: ", sample_std)

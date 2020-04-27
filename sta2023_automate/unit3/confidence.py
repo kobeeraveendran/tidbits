@@ -23,7 +23,8 @@ if __name__ == '__main__':
 
     parser.add_argument("--as_list", dest = 'as_list', action = 'store_true')
     parser.add_argument("--t_val", dest = 't_val', action = 'store_true')
-    parser.set_defaults(as_list = False, t_val = False)
+    parser.add_argument("--prop", dest = 'prop', action = 'store_true')
+    parser.set_defaults(as_list = False, t_val = False, prop = False)
 
     args = parser.parse_args()
 
@@ -63,18 +64,39 @@ if __name__ == '__main__':
 
         print("Bounds: ", bounds)
 
+    elif args.prop:
+        n = int(input("n: "))
+        p = float(input("p numerator (success): ")) / n
+        q = 1. - p
+
+        conf = float(input("Confidence (as %): ")) / 100.
+
+        z_score = stats.norm.ppf(1 - (1 - conf)/2)
+
+        conf_interval = "{} +/- {} * sqrt({} * {} / {})".format(p, z_score, p, q, n)
+
+        print(conf_interval)
+
+        bounds = (p - z_score * math.sqrt((p * q) / n), p + z_score * math.sqrt((p * q) / n))
+
+        #bounds = (p - z_table[conf] * (std / math.sqrt(n)), x_bar + crit_val * (std / math.sqrt(n)))
+
+        print("Bounds: ", bounds)
+
     else:
         #mean = float(input("Mean: "))
         std = float(input("Std dev: "))
-        conf = input("Confidence (as %): ")
+        conf = float(input("Confidence (as %): ")) / 100.
 
         n = float(input("n: "))
         x_bar = float(input("Sample mean (x bar): "))
 
-        conf_interval = str(x_bar) + " +/- " + str(z_table[conf]) + "({}/sqrt({})".format(std, n)
+        z_score = stats.norm.ppf(1 - (1 - conf)/2)
+
+        conf_interval = str(x_bar) + " +/- " + str(z_score) + "({}/sqrt({})".format(std, n)
 
         print(conf_interval)
 
-        bounds = (x_bar - z_table[conf] * (std / math.sqrt(n)), x_bar + z_table[conf] * (std / math.sqrt(n)))
+        bounds = (x_bar - z_score * (std / math.sqrt(n)), x_bar + z_score * (std / math.sqrt(n)))
 
         print("Bounds:\n", bounds)
